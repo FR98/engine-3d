@@ -6,24 +6,84 @@
 """
 
 from gl import Render
-from color import Color
 
+import examples
 
-r = Render.glInit(24, 24)
-# r.glCreateWindow(11, 11)
-# r.glViewPort(2, 2, 9, 9)
+def menu():
+	print("""
+	Menu:
+1.  Draw
+2.  Draw Star
+99.Exit
+	""")
 
-r.glCreateWindow(16, 16)
-r.glViewPort(2, 2, 9, 9)
+def menu_draw():
+	print("""
+	Menu:
+1.  Set Window
+2.  Set ViewPort
+3.  Set colors
+4.  Draw Pixel
+5.  Draw Line
+98.  Data
+99.Finish
+	""")
 
-r.glClear()
-r.glClearColor(0, 0, 1)
-r.glClearBlack()
+continuar = True
 
-r.glColor(0, 0, 1)
-r.glVertex(-1, -1)
-r.glVertex(-1, 1)
-r.glVertex(0, 0)
-r.glVertex(1, -1)
-r.glVertex(1, 1)
-r.glFinish()
+while continuar:
+	menu()
+	print("Tomar en cuenta que por ahora el window debe ser cuadrado")
+	option = input('Ingresa un numero: ')
+
+	if option == '1':
+		finish = False
+		render = Render.glInit(16, 20)
+
+		while not finish:
+			menu_draw()
+			option2 = input('Ingresa un numero: ')
+
+			if option2 == '1':
+				w = int(input('Ingrese un ancho: '))
+				h = int(input('Ingrese una altura: '))
+				render.glCreateWindow(w, h)
+			elif option2 == '2':
+				x = int(input('Ingrese una posicion inicial x: '))
+				y = int(input('Ingrese una posicion inicial y: '))
+				w = int(input('Ingrese un ancho: '))
+				h = int(input('Ingrese una altura: '))
+				render.glViewPort(x, y, w, h)
+			elif option2 == '3':
+				window_color = input('Ingresa un color para el window: ')
+				viewport_color = input('Ingresa un color para viewport: ')
+				draw_color = input('Ingresa un color para dibujar: ')
+			elif option2 == '4':
+				# Pixel
+				x = float(input('Ingrese una posicion x: '))
+				y = float(input('Ingrese una posicion y: '))
+				render.glVertex(x, y)
+			elif option2 == '5':
+				# Line
+				x0 = float(input('Ingrese una posicion inicial x: '))
+				y0 = float(input('Ingrese una posicion inicial y: '))
+				x1 = float(input('Ingrese una posicion final x: '))
+				y1 = float(input('Ingrese una posicion final y: '))
+				render.glLine(x0, y0, x1, y1)
+			elif option2 == '98':
+				render.data()
+			elif option2 == '99':
+				render.glFinish()
+				finish = True
+			else:
+				print('Opcion incorrecta')
+
+	elif option == '2':
+		w = int(input('Ingrese un ancho: '))
+		h = int(input('Ingrese una altura: '))
+		examples.star(w, h)
+	elif option == '99':
+		continuar = False
+		print('Bye Bye')
+	else:
+		print('Opcion incorrecta')
