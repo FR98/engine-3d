@@ -1,0 +1,17 @@
+# OBJ Material Export by Luxion KeyShot
+
+newmtl Steel Rough
+Kd 0 0 0
+Ks 0.474754 0.465309 0.458564
+
+newmtl Paint Gloss Black #1
+Kd 0.027451 0.027451 0.027451
+Ks 0 0 0
+
+newmtl Paint Gloss Yellow
+Kd 0.979995 0.840345 0.0489967
+Ks 0 0 0
+
+newmtl Paint Gloss Black
+Kd 0.027451 0.027451 0.027451
+Ks 0 0 0

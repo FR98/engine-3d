@@ -14,6 +14,7 @@ def menu():
 	Menu:
 1.  Draw
 2.  Draw Star
+3.  Biplane OBJ
 99.Exit
 	""")
 
@@ -38,7 +39,7 @@ while continuar:
 
 	if option == '1':
 		finish = False
-		render = Render.glInit(16, 20)
+		render = Render.glInit(64, 64)
 
 		while not finish:
 			menu_draw()
@@ -82,6 +83,8 @@ while continuar:
 		w = int(input('Ingrese un ancho: '))
 		h = int(input('Ingrese una altura: '))
 		examples.star(w, h)
+	elif option == '3':
+		examples.biplane()
 	elif option == '99':
 		continuar = False
 		print('Bye Bye')

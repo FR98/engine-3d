@@ -50,3 +50,9 @@ def star(width, height):
     r.glLine(0, 0, -1, 0.25)
 
     r.glFinish()
+
+def biplane():
+    render = Render(3700, 3700)
+    # render.load_model('./models/Propeller/Propeller.obj', (0, 0), (0.4, 0.4))
+    render.load_model('./models/Biplane/OBJ/HiPoly/Biplane.obj', (0, 0), (450, 450))
+    render.glFinish()
