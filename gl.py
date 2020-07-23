@@ -5,10 +5,10 @@
 ---------------------------------------------------------------------------------------------------
 """
 
-from color import Color
-from memory import MemorySize
+from utils.color import Color
+from utils.memory import MemorySize
 from obj import Obj
-import glmath
+import utils.glmath as glmath
 
 
 class Render(object):

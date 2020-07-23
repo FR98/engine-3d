@@ -6,8 +6,7 @@
 """
 
 from gl import Render
-
-import examples
+import utils.examples as examples
 
 def menu():
 	print("""
