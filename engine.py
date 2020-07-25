@@ -14,6 +14,7 @@ def menu():
 1.  Draw
 2.  Draw Star
 3.  Biplane OBJ
+4.  Poligonos
 99.Exit
 	""")
 
@@ -84,6 +85,8 @@ while continuar:
 		examples.star(w, h)
 	elif option == '3':
 		examples.biplane()
+	elif option == '4':
+		examples.poligonos()
 	elif option == '99':
 		continuar = False
 		print('Bye Bye')

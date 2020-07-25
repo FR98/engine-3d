@@ -7,6 +7,7 @@
 
 from utils.color import Color
 from utils.memory import MemorySize
+from utils.polygone import Polygone
 from obj import Obj
 import utils.glmath as glmath
 
@@ -152,3 +153,11 @@ class Render(object):
                 y1 = round(v1[1] * scale[1] + posY)
 
                 self.glLine_coords(x0, y0, x1, y1)
+
+    def polygone(self, vertices):
+        if len(vertices) < 3: return False
+        polygone = Polygone(self, vertices)
+        polygone.draw_polygone()
+        for x in range(self.viewPort_width):
+            for y in range(self.viewPort_height):
+                if polygone.has(x, y): self.glVertex_coords(x, y)
