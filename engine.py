@@ -15,6 +15,8 @@ def menu():
 2.  Draw Star
 3.  Biplane OBJ
 4.  Poligonos
+5.  Load model con triangulos
+6.  Dibujar ZBuffer
 99.Exit
 	""")
 
@@ -87,6 +89,10 @@ while continuar:
 		examples.biplane()
 	elif option == '4':
 		examples.poligonos()
+	elif option == '5':
+		examples.model_with_triangle()
+	elif option == '6':
+		examples.model_z_buffer()
 	elif option == '99':
 		continuar = False
 		print('Bye Bye')

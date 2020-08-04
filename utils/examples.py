@@ -70,3 +70,14 @@ def poligonos():
     render.polygone(poligono4)
     render.polygone(poligono5)
     render.glFinish()
+
+def model_with_triangle():
+    render = Render(3700, 3700)
+    render.loadModel('./models/Biplane/OBJ/HiPoly/Biplane.obj', render.vector(0, 0, 0), render.vector(300, 300, 300))
+    render.glFinish()
+
+def model_z_buffer():
+    render = Render(3700, 3700)
+    render.loadModel('./models/Biplane/OBJ/HiPoly/Biplane.obj', (0, 0, 0), (300, 300, 300))
+    render.glFinish()
+    render.glZBuffer()
