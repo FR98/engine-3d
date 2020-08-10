@@ -213,14 +213,14 @@ class Render(object):
                 intensity = round(glmath.dot(normal, light['x'], light['y'], light['z']))
 
                 if intensity >= 0:
-                    self.triangle_bc(self.vector(x0, y0, z0), self.vector(x1, y1, z1), self.vector(x2, y2, z2), texture=texture, intensity=intensity)
+                    self.triangle_bc(self.vector(x0, y0, z0), self.vector(x1, y1, z1), self.vector(x2, y2, z2), intensity=intensity)
                 
                 if vertex_count > 3: 
                     v3 = model.vertices[face[3][0] - 1]
                     x3, y3, z3 = int(v3[0] * scale['x']  + posX), int(v3[1] * scale['y']  + posY), int(v3[2] * scale['z']  + translate['z'])
 
                     if intensity >= 0:
-                        self.triangle_bc(self.vector(x0, y0, z0), self.vector(x2, y2, z2), self.vector(x3, y3, z3), texture=texture, intensity=intensity)
+                        self.triangle_bc(self.vector(x0, y0, z0), self.vector(x2, y2, z2), self.vector(x3, y3, z3), intensity=intensity)
 
     def transform(self, vertex, translate=None, scale=None):
         if translate == None:

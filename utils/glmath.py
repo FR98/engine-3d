@@ -18,44 +18,38 @@ def baryCoords(A, B, C, P):
 
     return u, v, w
 
-# Suma de vectores de 3 elementos
 def sum(x0, x1, y0, y1, z0, z1):
-    arr_sum = []
-    arr_sum.extend((x0 + x1, y0 + y1, z0 + z1))
-    return arr_sum
+    sum = []
+    sum.extend((x0 + x1, y0 + y1, z0 + z1))
+    return sum
 
-# Resta de vectores de 3 elementos
 def sub(x0, x1, y0, y1, z0, z1):
-    arr_sub = []
-    arr_sub.extend((x0 - x1, y0 - y1, z0 - z1))
-    return arr_sub
-    
-# Producto cruz entre dos vectores
-def cross(v0, v1):
-    arr_cross = []
-    arr_cross.extend((v0[1] * v1[2] - v1[1] * v0[2], -(v0[0] * v1[2] - v1[0] * v0[2]), v0[0] * v1[1] - v1[0] * v0[1]))
-    return arr_cross
+    sub = []
+    sub.extend((x0 - x1, y0 - y1, z0 - z1))
+    return sub
 
-# Producto punto (utilizado para la matriz con las coordenadas de luz)
+def cross(v0, v1):
+    cross = []
+    cross.extend((v0[1] * v1[2] - v1[1] * v0[2], -(v0[0] * v1[2] - v1[0] * v0[2]), v0[0] * v1[1] - v1[0] * v0[1]))
+    return cross
+
 def dot(norm, lX, lY, lZ):
     return ((norm[0] * lX) + (norm[1] * lY) + (norm[2] * lZ))
 
-# Calculo de la normal de un vector
 def norm(v0):
     if (v0 == 0):
-        arr0_norm = []
-        arr0_norm.extend((0,0,0))
-        return arr0_norm
+        norm = []
+        norm.extend((0,0,0))
+        return norm
 
     return((v0[0]**2 + v0[1]**2 + v0[2]**2)**(1/2))
 
-# Division vector con normal
 def div(v0, norm):
     if (norm == 0):
-        arr0_norm = []
-        arr0_norm.extend((0,0,0))
-        return arr0_norm
+        norm = []
+        norm.extend((0,0,0))
+        return norm
     else:
-        arr_div = []
-        arr_div.extend((v0[0] / norm, v0[1] / norm, v0[2] / norm))
-        return arr_div
+        div = []
+        div.extend((v0[0] / norm, v0[1] / norm, v0[2] / norm))
+        return div
