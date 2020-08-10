@@ -17,6 +17,7 @@ def menu():
 4.  Poligonos
 5.  Load model con triangulos
 6.  Dibujar ZBuffer
+7.  Dibujar Modelo con textura
 99.Exit
 	""")
 
@@ -93,6 +94,8 @@ while continuar:
 		examples.model_with_triangle()
 	elif option == '6':
 		examples.model_z_buffer()
+	elif option == '7':
+		examples.model_texture()
 	elif option == '99':
 		continuar = False
 		print('Bye Bye')
