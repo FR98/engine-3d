@@ -1,4 +1,5 @@
 from gl import Render
+from obj import Texture
 
 def star(width, height):
     r = Render.glInit(width, height)
@@ -52,9 +53,9 @@ def star(width, height):
     r.glFinish()
 
 def biplane():
-    render = Render(3700, 3700)
+    render = Render(2000, 2000)
     # render.load_model('./models/Propeller/Propeller.obj', (0, 0), (0.4, 0.4))
-    render.load_model('./models/Biplane/OBJ/HiPoly/Biplane.obj', (0, 0), (450, 450))
+    render.load_model_2D('./models/Biplane/OBJ/HiPoly/Biplane.obj', render.vector(0, 0), render.vector(200, 200))
     render.glFinish()
 
 def poligonos():
@@ -70,3 +71,21 @@ def poligonos():
     render.polygone(poligono4)
     render.polygone(poligono5)
     render.glFinish()
+
+def model_with_triangle():
+    render = Render(2000, 2000)
+    render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', render.vector(0, 0, 0), render.vector(200, 200, 200), render.vector(1, 1, 1))
+    render.glFinish()
+
+def model_z_buffer():
+    render = Render(2000, 2000)
+    render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', render.vector(0, 0, 0), render.vector(200, 200, 200), render.vector(1, 1, 1))
+    render.glFinish()
+    render.glZBuffer()
+
+def model_texture():
+    texture = Texture('./models/Face/model.bmp')
+    render = Render(2000, 2000)
+    render.load_model_3D('./models/Face/model.obj', render.vector(0, 0, 0), render.vector(200, 200, 200), render.vector(0, 0, 1), texture, False)
+    render.glFinish()
+    render.glZBuffer()
