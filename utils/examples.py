@@ -74,13 +74,15 @@ def poligonos():
 
 def model_with_triangle():
     render = Render(2000, 2000)
-    render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', translate=render.vector(0, 0, 0), scale=render.vector(200, 200, 200), light=render.vector(0, 0, 1))
+    render.light = render.vector(0, 0, 1)
+    render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', translate=render.vector(0, 0, 0), scale=render.vector(200, 200, 200))
     render.glFinish()
 
 def model_z_buffer():
     render = Render(2000, 2000)
+    render.light = render.vector(0, 0, 1)
     # render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', translate=render.vector(0, 0, 0), scale=render.vector(200, 200, 200), light=render.vector(0, 0, 1))
-    render.load_model_3D('./models/Face/model.obj', translate=render.vector(0, 0, 0), scale=render.vector(200, 200, 200), light=render.vector(0, 0, 1))
+    render.load_model_3D('./models/Face/model.obj', translate=render.vector(0, 0, 0), scale=render.vector(200, 200, 200))
     # render.glFinish()
     render.glZBuffer()
 
