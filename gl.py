@@ -59,14 +59,14 @@ class Render(object):
     def glClearColor(self, r, g, b):
         self.glClear(r, g, b)
 
-    def glVertex(self, x, y):
+    def glVertex(self, x, y, color=None):
         x_relative, y_relative = self.ndp_to_pixels(x, y)
         try:
-            self.viewPort[y_relative][x_relative] = self.draw_color
+            self.viewPort[y_relative][x_relative] = color or self.draw_color
         except:
             pass
 
-    def glVertex_coords(self, x, y, color = None):
+    def glVertex_coords(self, x, y, color=None):
         if color == None:
             color = self.draw_color
         try:
@@ -169,6 +169,7 @@ class Render(object):
     def load_model_3D(self, filename, translate, scale, isWireframe=False):
         model = Obj(filename)
         posX, posY = self.ndp_to_pixels(translate['x'], translate['y'])
+        translate = self.vector(posX, posY, 0)
 
         for face in model.faces:
             vertex_count = len(face)
@@ -216,11 +217,14 @@ class Render(object):
                     vt2 = self.vector(0, 0)
                     vt3 = self.vector(0, 0)
 
-                vn0 = model.normals[face[0][2] - 1]
-                vn1 = model.normals[face[1][2] - 1]
-                vn2 = model.normals[face[2][2] - 1]
-                if vertex_count > 3:
-                    vn3 = model.normals[face[3][2] - 1]
+                try:
+                    vn0 = model.normals[face[0][2] - 1]
+                    vn1 = model.normals[face[1][2] - 1]
+                    vn2 = model.normals[face[2][2] - 1]
+                    if vertex_count > 3:
+                        vn3 = model.normals[face[3][2] - 1]
+                except:
+                    pass
 
                 # sub1 = glmath.sub(x1, x0, y1, y0, z1, z0)
                 # sub2 = glmath.sub(x2, x0, y2, y0, z2, z0)
@@ -247,7 +251,7 @@ class Render(object):
                 #         self.triangle_bc(v0,v2,v3, texture = texture, texcoords = (vt0,vt2,vt3), intensity = intensity)
 
                 self.triangle_bc(v0,v1,v2, texcoords = (vt0,vt1,vt2), normals = (vn0,vn1,vn2))
-                if vertex_count > 3: #asumamos que 4, un cuadrado
+                if vertex_count > 3:
                     self.triangle_bc(v0,v2,v3, texcoords = (vt0,vt2,vt3), normals = (vn0,vn2,vn3))
 
     def transform(self, vertex, translate=None, scale=None):
@@ -260,7 +264,7 @@ class Render(object):
         return self.vector(round(vertex['x'] * scale['x'] + translate['x']), round(vertex['y'] * scale['y'] + translate['y']), round(vertex['z'] * scale['z'] + translate['z']))
 
 
-    def triangle_bc(self, A, B, C, color=Color.white(), normals=(), texcoords=()):
+    def triangle_bc(self, A, B, C, texcoords, color=None, normals=()):
         minX = min(A['x'], B['x'], C['x'])
         minY = min(A['y'], B['y'], C['y'])
         maxX = max(A['x'], B['x'], C['x'])
@@ -280,35 +284,39 @@ class Render(object):
                     if z > self.zbuffer[y][x]:
                         r, g, b = self.active_shader(
                             self,
-                            verts=(A,B,C),
+                            # verts=(A,B,C),
                             baryCoords=(u,v,w),
                             texCoords=texcoords,
                             normals=normals,
-                            color = color or self.draw_color
+                            colores = Color.color(127, 127, 127)
                         )
-                        
-                        self.glVertex_coords(x, y, Color.color(r, g, b))
+
+                        # print(r, g, b)
+
+                        self.glVertex_coords(x, y, Color.color(int(r), int(g), int(b)))
                         self.zbuffer[y][x] = z
 
 
     def glZBuffer(self, filename='zbuffer.bmp'):
         archivo = open(filename, 'wb')
 
+        height, width = self.height, self.width
+
         # File header 14 bytes
         archivo.write(bytes('B'.encode('ascii')))
         archivo.write(bytes('M'.encode('ascii')))
-        archivo.write(MemorySize.dword(14 + 40 + self.width * self.height * 3))
+        archivo.write(MemorySize.dword(14 + 40 + width * height * 3))
         archivo.write(MemorySize.dword(0))
         archivo.write(MemorySize.dword(14 + 40))
 
         # Image Header 40 bytes
         archivo.write(MemorySize.dword(40))
-        archivo.write(MemorySize.dword(self.width))
-        archivo.write(MemorySize.dword(self.height))
+        archivo.write(MemorySize.dword(width))
+        archivo.write(MemorySize.dword(height))
         archivo.write(MemorySize.word(1))
         archivo.write(MemorySize.word(24))
         archivo.write(MemorySize.dword(0))
-        archivo.write(MemorySize.dword(self.width * self.height * 3))
+        archivo.write(MemorySize.dword(width * height * 3))
         archivo.write(MemorySize.dword(0))
         archivo.write(MemorySize.dword(0))
         archivo.write(MemorySize.dword(0))
@@ -316,8 +324,8 @@ class Render(object):
 
         minZ = float('inf')
         maxZ = -float('inf')
-        for x in range(self.height):
-            for y in range(self.width):
+        for x in range(height):
+            for y in range(width):
                 if self.zbuffer[x][y] != -float('inf'):
                     if self.zbuffer[x][y] < minZ:
                         minZ = self.zbuffer[x][y]
@@ -325,8 +333,8 @@ class Render(object):
                     if self.zbuffer[x][y] > maxZ:
                         maxZ = self.zbuffer[x][y]
 
-        for x in range(self.height):
-            for y in range(self.width):
+        for x in range(height):
+            for y in range(width):
                 depth = self.zbuffer[x][y]
                 if depth == -float('inf'):
                     depth = minZ

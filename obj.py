@@ -61,7 +61,7 @@ class Texture(object):
                 b = ord(image.read(1)) / 255
                 g = ord(image.read(1)) / 255
                 r = ord(image.read(1)) / 255
-                self.pixels[y].append(Color.color(r,g,b))
+                self.pixels[y].append(Color.color(int(r),int(g),int(b)))
 
         image.close()
 
