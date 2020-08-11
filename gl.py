@@ -189,12 +189,6 @@ class Render(object):
                 if vertex_count > 3:
                     v3 = model.vertices[ face[3][0] - 1 ]
 
-                # x0, y0, z0 = int(v0[0] * scale['x']  + translate['x']), int(v0[1] * scale['y']  + translate['y']), int(v0[2] * scale['z']  + translate['z'])
-                # x1, y1, z1 = int(v1[0] * scale['x']  + translate['x']), int(v1[1] * scale['y']  + translate['y']), int(v1[2] * scale['z']  + translate['z'])
-                # x2, y2, z2 = int(v2[0] * scale['x']  + translate['x']), int(v2[1] * scale['y']  + translate['y']), int(v2[2] * scale['z']  + translate['z'])
-                # v0 = self.transform(self.vector(x0, y0, z0), translate, scale)
-                # v1 = self.transform(self.vector(x1, y1, z1), translate, scale)
-                # v2 = self.transform(self.vector(x2, y2, z2), translate, scale)
                 v0 = self.transform(self.vector(v0[0], v0[1], v0[2]), translate, scale)
                 v1 = self.transform(self.vector(v1[0], v1[1], v1[2]), translate, scale)
                 v2 = self.transform(self.vector(v2[0], v2[1], v2[2]), translate, scale)
@@ -225,30 +219,6 @@ class Render(object):
                         vn3 = model.normals[face[3][2] - 1]
                 except:
                     pass
-
-                # sub1 = glmath.sub(x1, x0, y1, y0, z1, z0)
-                # sub2 = glmath.sub(x2, x0, y2, y0, z2, z0)
-                # cross1 = glmath.cross(sub1, sub2 )
-                # norm1 = glmath.norm(cross1)
-                # cross2 = glmath.cross(sub1, sub2)
-
-                # normal = glmath.div(cross2, norm1)
-                # intensity = round(glmath.dot(normal, light['x'], light['y'], light['z']))
-
-                # if intensity >= 0:
-                #     self.triangle_bc(self.vector(x0, y0, z0), self.vector(x1, y1, z1), self.vector(x2, y2, z2), intensity=intensity)
-                
-                # if vertex_count > 3: 
-                #     v3 = model.vertices[face[3][0] - 1]
-                #     x3, y3, z3 = int(v3[0] * scale['x']  + translate['x']), int(v3[1] * scale['y']  + translate['y']), int(v3[2] * scale['z']  + translate['z'])
-
-                #     if intensity >= 0:
-                #         self.triangle_bc(self.vector(x0, y0, z0), self.vector(x2, y2, z2), self.vector(x3, y3, z3), intensity=intensity)
-
-                # if intensity >=0:
-                #     self.triangle_bc(v0,v1,v2, texture = texture, texcoords = (vt0,vt1,vt2), intensity = intensity )
-                #     if vertex_count > 3: #asumamos que 4, un cuadrado
-                #         self.triangle_bc(v0,v2,v3, texture = texture, texcoords = (vt0,vt2,vt3), intensity = intensity)
 
                 self.triangle_bc(v0,v1,v2, texcoords = (vt0,vt1,vt2), normals = (vn0,vn1,vn2))
                 if vertex_count > 3:
