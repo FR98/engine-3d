@@ -50,7 +50,7 @@ class Render(object):
         self.glClear()
 
     def glClear(self, r = 0, g = 0, b = 0):
-        self.pixels = [ [ Color.color(int(r * 255), int(g * 255), int(b * 255)) for y in range(self.height) ] for x in range(self.width) ]
+        self.pixels = [ [ Color.color(r, g, b) for y in range(self.height) ] for x in range(self.width) ]
         self.zbuffer = [ [ -float('inf') for x in range(self.width)] for y in range(self.height) ]
 
     def glClearWhite(self):
@@ -75,7 +75,7 @@ class Render(object):
             pass
 
     def glColor(self, r = 0, g = 0, b = 0):
-        self.draw_color = Color.color(int(r * 255), int(g * 255), int(b * 255))
+        self.draw_color = Color.color(r, g, b)
 
     def glFinish(self, filename = 'output.bmp'):
         render = open(filename, 'wb')
@@ -288,12 +288,12 @@ class Render(object):
                             baryCoords=(u,v,w),
                             texCoords=texcoords,
                             normals=normals,
-                            colores = Color.color(127, 127, 127)
+                            colores = Color.color(0.5, 0.5, 0.5)
                         )
 
                         # print(r, g, b)
 
-                        self.glVertex_coords(x, y, Color.color(int(r), int(g), int(b)))
+                        self.glVertex_coords(x, y, Color.color(r, g, b))
                         self.zbuffer[y][x] = z
 
 
@@ -339,7 +339,6 @@ class Render(object):
                 if depth == -float('inf'):
                     depth = minZ
                 depth = (depth - minZ) / (maxZ - minZ)
-                depth = int(depth)
                 archivo.write(Color.color(depth,depth,depth))
 
         archivo.close()

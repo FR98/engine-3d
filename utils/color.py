@@ -13,7 +13,7 @@ class Color(object):
 
     @staticmethod
     def color(r, g, b):
-        return bytes([b, g, r])
+        return bytes([int(b*255), int(g*255), int(r*255)])
 
     @staticmethod
     def black():
@@ -21,4 +21,4 @@ class Color(object):
 
     @staticmethod
     def white():
-        return Color.color(255, 255, 255)
+        return Color.color(1, 1, 1)
