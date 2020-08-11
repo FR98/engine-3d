@@ -18,38 +18,30 @@ def baryCoords(A, B, C, P):
 
     return u, v, w
 
-def sum(x0, x1, y0, y1, z0, z1):
-    sum = []
-    sum.extend((x0 + x1, y0 + y1, z0 + z1))
-    return sum
+def vector(self, x, y, z=0, w=0):
+    return {
+        "x": x,
+        "y": y,
+        "z": z,
+        "w": w
+    }
 
-def sub(x0, x1, y0, y1, z0, z1):
-    sub = []
-    sub.extend((x0 - x1, y0 - y1, z0 - z1))
-    return sub
+def sub(A, B):
+    return vector(A['x'] - B['x'], A['y'] - B['y'], A['z'] - B['z'])
 
-def cross(v0, v1):
-    cross = []
-    cross.extend((v0[1] * v1[2] - v1[1] * v0[2], -(v0[0] * v1[2] - v1[0] * v0[2]), v0[0] * v1[1] - v1[0] * v0[1]))
-    return cross
+def cross(A, B):
+    return vector(A['y'] * B['z'] - B['y'] * A['z'], -(A['x'] * B['z'] - B['x'] * A['z']), A['x'] * B['y'] - B['x'] * A['y'])
 
-def dot(norm, lX, lY, lZ):
-    return ((norm[0] * lX) + (norm[1] * lY) + (norm[2] * lZ))
+def dot(norm, l):
+    return ((norm['x'] * l['x']) + (norm['y'] * l['y']) + (norm['z'] * l['z']))
 
-def norm(v0):
-    if (v0 == 0):
-        norm = []
-        norm.extend((0,0,0))
-        return norm
+def norm(V):
+    if (V == 0):
+        return vector(0, 0, 0)
+    return((V['x']**2 + V['y']**2 + V['z']**2)**(1/2))
 
-    return((v0[0]**2 + v0[1]**2 + v0[2]**2)**(1/2))
-
-def div(v0, norm):
+def div(V, norm):
     if (norm == 0):
-        norm = []
-        norm.extend((0,0,0))
-        return norm
+        return vector(0, 0, 0)
     else:
-        div = []
-        div.extend((v0[0] / norm, v0[1] / norm, v0[2] / norm))
-        return div
+        return vector(V['x'] / norm, V['y'] / norm, V['z'] / norm)
