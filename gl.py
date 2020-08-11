@@ -19,6 +19,10 @@ class Render(object):
         self.window_color = Color.black()
         self.draw_color = Color.white()
         self.glClear()
+        self.light = self.vector(0, 0, 1)
+        self.active_texture = None
+        self.active_texture2 = None
+        self.active_shader = None
 
     @staticmethod
     def glInit(width, height):
@@ -55,14 +59,14 @@ class Render(object):
     def glClearColor(self, r, g, b):
         self.glClear(r, g, b)
 
-    def glVertex(self, x, y):
+    def glVertex(self, x, y, color=None):
         x_relative, y_relative = self.ndp_to_pixels(x, y)
         try:
-            self.viewPort[y_relative][x_relative] = self.draw_color
+            self.viewPort[y_relative][x_relative] = color or self.draw_color
         except:
             pass
 
-    def glVertex_coords(self, x, y, color = None):
+    def glVertex_coords(self, x, y, color=None):
         if color == None:
             color = self.draw_color
         try:
@@ -140,6 +144,14 @@ class Render(object):
             y, av = (y + 1, av - dx) if av >= 0 else (y, av)
             av += dy
 
+    def polygone(self, vertices):
+        if len(vertices) < 3: return False
+        polygone = Polygone(self, vertices)
+        polygone.draw_polygone()
+        for x in range(self.viewPort_width):
+            for y in range(self.viewPort_height):
+                if polygone.has(x, y): self.glVertex_coords(x, y)
+
     def load_model_2D(self, filename, translate, scale):
         model = Obj(filename)
         posX, posY = self.ndp_to_pixels(translate['x'], translate['y'])
@@ -154,9 +166,10 @@ class Render(object):
                 x1, y1 = round(v1[0] * scale['x'] + posX), round(v1[1] * scale['y'] + posY)
                 self.glLine_coords(x0, y0, x1, y1)
 
-    def load_model_3D(self, filename, translate, scale, light, texture=None, isWireframe=False):
+    def load_model_3D(self, filename, translate, scale, isWireframe=False):
         model = Obj(filename)
         posX, posY = self.ndp_to_pixels(translate['x'], translate['y'])
+        translate = self.vector(posX, posY, 0)
 
         for face in model.faces:
             vertex_count = len(face)
@@ -165,29 +178,30 @@ class Render(object):
                 for vert in range(vertex_count):
                     v0 = model.vertices[face[vert][0] - 1]
                     v1 = model.vertices[face[(vert + 1) % vertex_count][0] - 1]
-                    x0, y0 = round(v0[0] * scale['x'] + posX), round(v0[1] * scale['y'] + posY)
-                    x1, y1 = round(v1[0] * scale['x'] + posX), round(v1[1] * scale['y'] + posY)
-                    self.glLine_coords(x0, y0, x1, y1)
+                    v0 = self.vector(round(v0[0] * scale['x'] + translate['x']), round(v0[1] * scale['y'] + translate['y']))
+                    v1 = self.vector(round(v1[0] * scale['x'] + translate['x']), round(v1[1] * scale['y'] + translate['y']))
+                    self.glLine_coords(v0['x'], v0['y'], v1['x'], v1['y'])
 
             else:
                 v0 = model.vertices[ face[0][0] - 1 ]
                 v1 = model.vertices[ face[1][0] - 1 ]
                 v2 = model.vertices[ face[2][0] - 1 ]
-
-                x0, y0, z0 = int(v0[0] * scale['x']  + posX), int(v0[1] * scale['y']  + posY), int(v0[2] * scale['z']  + translate['z'])
-                x1, y1, z1 = int(v1[0] * scale['x']  + posX), int(v1[1] * scale['y']  + posY), int(v1[2] * scale['z']  + translate['z'])
-                x2, y2, z2 = int(v2[0] * scale['x']  + posX), int(v2[1] * scale['y']  + posY), int(v2[2] * scale['z']  + translate['z'])
-
                 if vertex_count > 3:
                     v3 = model.vertices[ face[3][0] - 1 ]
 
-                v0 = self.transform(v0, translate, scale)
-                v1 = self.transform(v1, translate, scale)
-                v2 = self.transform(v2, translate, scale)
+                # x0, y0, z0 = int(v0[0] * scale['x']  + translate['x']), int(v0[1] * scale['y']  + translate['y']), int(v0[2] * scale['z']  + translate['z'])
+                # x1, y1, z1 = int(v1[0] * scale['x']  + translate['x']), int(v1[1] * scale['y']  + translate['y']), int(v1[2] * scale['z']  + translate['z'])
+                # x2, y2, z2 = int(v2[0] * scale['x']  + translate['x']), int(v2[1] * scale['y']  + translate['y']), int(v2[2] * scale['z']  + translate['z'])
+                # v0 = self.transform(self.vector(x0, y0, z0), translate, scale)
+                # v1 = self.transform(self.vector(x1, y1, z1), translate, scale)
+                # v2 = self.transform(self.vector(x2, y2, z2), translate, scale)
+                v0 = self.transform(self.vector(v0[0], v0[1], v0[2]), translate, scale)
+                v1 = self.transform(self.vector(v1[0], v1[1], v1[2]), translate, scale)
+                v2 = self.transform(self.vector(v2[0], v2[1], v2[2]), translate, scale)
                 if vertex_count > 3:
-                    v3 = self.transform(v3,translate, scale)
+                    v3 = self.transform(self.vector(v3[0], v3[1], v3[2]), translate, scale)
 
-                if texture:
+                if self.active_texture:
                     vt0 = model.texture_coords[face[0][1] - 1]
                     vt1 = model.texture_coords[face[1][1] - 1]
                     vt2 = model.texture_coords[face[2][1] - 1]
@@ -203,24 +217,42 @@ class Render(object):
                     vt2 = self.vector(0, 0)
                     vt3 = self.vector(0, 0)
 
-                sub1 = glmath.sub(x1, x0, y1, y0, z1, z0)
-                sub2 = glmath.sub(x2, x0, y2, y0, z2, z0)
-                cross1 = glmath.cross(sub1, sub2 )
-                norm1 = glmath.norm(cross1)
-                cross2 = glmath.cross(sub1, sub2)
+                try:
+                    vn0 = model.normals[face[0][2] - 1]
+                    vn1 = model.normals[face[1][2] - 1]
+                    vn2 = model.normals[face[2][2] - 1]
+                    if vertex_count > 3:
+                        vn3 = model.normals[face[3][2] - 1]
+                except:
+                    pass
 
-                normal = glmath.div(cross2, norm1)
-                intensity = round(glmath.dot(normal, light['x'], light['y'], light['z']))
+                # sub1 = glmath.sub(x1, x0, y1, y0, z1, z0)
+                # sub2 = glmath.sub(x2, x0, y2, y0, z2, z0)
+                # cross1 = glmath.cross(sub1, sub2 )
+                # norm1 = glmath.norm(cross1)
+                # cross2 = glmath.cross(sub1, sub2)
 
-                if intensity >= 0:
-                    self.triangle_bc(self.vector(x0, y0, z0), self.vector(x1, y1, z1), self.vector(x2, y2, z2), intensity=intensity)
+                # normal = glmath.div(cross2, norm1)
+                # intensity = round(glmath.dot(normal, light['x'], light['y'], light['z']))
+
+                # if intensity >= 0:
+                #     self.triangle_bc(self.vector(x0, y0, z0), self.vector(x1, y1, z1), self.vector(x2, y2, z2), intensity=intensity)
                 
-                if vertex_count > 3: 
-                    v3 = model.vertices[face[3][0] - 1]
-                    x3, y3, z3 = int(v3[0] * scale['x']  + posX), int(v3[1] * scale['y']  + posY), int(v3[2] * scale['z']  + translate['z'])
+                # if vertex_count > 3: 
+                #     v3 = model.vertices[face[3][0] - 1]
+                #     x3, y3, z3 = int(v3[0] * scale['x']  + translate['x']), int(v3[1] * scale['y']  + translate['y']), int(v3[2] * scale['z']  + translate['z'])
 
-                    if intensity >= 0:
-                        self.triangle_bc(self.vector(x0, y0, z0), self.vector(x2, y2, z2), self.vector(x3, y3, z3), intensity=intensity)
+                #     if intensity >= 0:
+                #         self.triangle_bc(self.vector(x0, y0, z0), self.vector(x2, y2, z2), self.vector(x3, y3, z3), intensity=intensity)
+
+                # if intensity >=0:
+                #     self.triangle_bc(v0,v1,v2, texture = texture, texcoords = (vt0,vt1,vt2), intensity = intensity )
+                #     if vertex_count > 3: #asumamos que 4, un cuadrado
+                #         self.triangle_bc(v0,v2,v3, texture = texture, texcoords = (vt0,vt2,vt3), intensity = intensity)
+
+                self.triangle_bc(v0,v1,v2, texcoords = (vt0,vt1,vt2), normals = (vn0,vn1,vn2))
+                if vertex_count > 3:
+                    self.triangle_bc(v0,v2,v3, texcoords = (vt0,vt2,vt3), normals = (vn0,vn2,vn3))
 
     def transform(self, vertex, translate=None, scale=None):
         if translate == None:
@@ -229,10 +261,10 @@ class Render(object):
         if scale == None:
             scale = self.vector(1, 1, 1)
 
-        return self.vector(round(vertex[0] * scale['x'] + translate['x']), round(vertex[1] * scale['y'] + translate['y']), round(vertex[2] * scale['z'] + translate['z']))
+        return self.vector(round(vertex['x'] * scale['x'] + translate['x']), round(vertex['y'] * scale['y'] + translate['y']), round(vertex['z'] * scale['z'] + translate['z']))
 
 
-    def triangle_bc(self, A, B, C, color=Color.white(), texture=None, texcoords=None, intensity=1):
+    def triangle_bc(self, A, B, C, texcoords, color=None, normals=()):
         minX = min(A['x'], B['x'], C['x'])
         minY = min(A['y'], B['y'], C['y'])
         maxX = max(A['x'], B['x'], C['x'])
@@ -250,47 +282,41 @@ class Render(object):
                     z = A['z'] * u + B['z'] * v + C['z'] * w
 
                     if z > self.zbuffer[y][x]:
-                        b, g , r = color
-                        b /= 255
-                        g /= 255
-                        r /= 255
+                        r, g, b = self.active_shader(
+                            self,
+                            # verts=(A,B,C),
+                            baryCoords=(u,v,w),
+                            texCoords=texcoords,
+                            normals=normals,
+                            colores = Color.color(127, 127, 127)
+                        )
 
-                        b *= intensity
-                        g *= intensity
-                        r *= intensity
+                        # print(r, g, b)
 
-                        if texture:
-                            ta, tb, tc = texcoords
-                            tx = ta.x * u + tb.x * v + tc.x * w
-                            ty = ta.y * u + tb.y * v + tc.y * w
-
-                            texColor = texture.getColor(tx, ty)
-                            b *= texColor[0] / 255
-                            g *= texColor[1] / 255
-                            r *= texColor[2] / 255
-                        
-                        self.glVertex_coords(x, y, Color.color(r, g, b))
+                        self.glVertex_coords(x, y, Color.color(int(r), int(g), int(b)))
                         self.zbuffer[y][x] = z
 
 
     def glZBuffer(self, filename='zbuffer.bmp'):
         archivo = open(filename, 'wb')
 
+        height, width = self.height, self.width
+
         # File header 14 bytes
         archivo.write(bytes('B'.encode('ascii')))
         archivo.write(bytes('M'.encode('ascii')))
-        archivo.write(MemorySize.dword(14 + 40 + self.width * self.height * 3))
+        archivo.write(MemorySize.dword(14 + 40 + width * height * 3))
         archivo.write(MemorySize.dword(0))
         archivo.write(MemorySize.dword(14 + 40))
 
         # Image Header 40 bytes
         archivo.write(MemorySize.dword(40))
-        archivo.write(MemorySize.dword(self.width))
-        archivo.write(MemorySize.dword(self.height))
+        archivo.write(MemorySize.dword(width))
+        archivo.write(MemorySize.dword(height))
         archivo.write(MemorySize.word(1))
         archivo.write(MemorySize.word(24))
         archivo.write(MemorySize.dword(0))
-        archivo.write(MemorySize.dword(self.width * self.height * 3))
+        archivo.write(MemorySize.dword(width * height * 3))
         archivo.write(MemorySize.dword(0))
         archivo.write(MemorySize.dword(0))
         archivo.write(MemorySize.dword(0))
@@ -298,8 +324,8 @@ class Render(object):
 
         minZ = float('inf')
         maxZ = -float('inf')
-        for x in range(self.height):
-            for y in range(self.width):
+        for x in range(height):
+            for y in range(width):
                 if self.zbuffer[x][y] != -float('inf'):
                     if self.zbuffer[x][y] < minZ:
                         minZ = self.zbuffer[x][y]
@@ -307,11 +333,13 @@ class Render(object):
                     if self.zbuffer[x][y] > maxZ:
                         maxZ = self.zbuffer[x][y]
 
-        for x in range(self.height):
-            for y in range(self.width):
+        for x in range(height):
+            for y in range(width):
                 depth = self.zbuffer[x][y]
-                depth = minZ if depth == -float('inf') else depth
-                depth = round((depth - minZ) / (maxZ - minZ))
+                if depth == -float('inf'):
+                    depth = minZ
+                depth = (depth - minZ) / (maxZ - minZ)
+                depth = int(depth)
                 archivo.write(Color.color(depth,depth,depth))
 
         archivo.close()

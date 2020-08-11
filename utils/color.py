@@ -13,7 +13,7 @@ class Color(object):
 
     @staticmethod
     def color(r, g, b):
-        return bytes([int(b), int(g), int(r)])
+        return bytes([b, g, r])
 
     @staticmethod
     def black():
