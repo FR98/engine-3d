@@ -339,6 +339,7 @@ class Render(object):
                 if depth == -float('inf'):
                     depth = minZ
                 depth = (depth - minZ) / (maxZ - minZ)
+                depth = int(depth)
                 archivo.write(Color.color(depth,depth,depth))
 
         archivo.close()
