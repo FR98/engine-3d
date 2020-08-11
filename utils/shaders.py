@@ -3,10 +3,7 @@ def gourad(render, **kwargs):
     u, v, w = kwargs['baryCoords']
     ta, tb, tc = kwargs['texCoords']
     na, nb, nc = kwargs['normals']
-    b, g, r = kwargs['colores']
-
-    print(r, g, b)
-    # print(b, g, r)
+    b, g, r = kwargs['color']
 
     b /= 255
     g /= 255

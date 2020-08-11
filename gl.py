@@ -288,10 +288,8 @@ class Render(object):
                             baryCoords=(u,v,w),
                             texCoords=texcoords,
                             normals=normals,
-                            colores = Color.color(0.5, 0.5, 0.5)
+                            color = color or self.draw_color
                         )
-
-                        # print(r, g, b)
 
                         self.glVertex_coords(x, y, Color.color(r, g, b))
                         self.zbuffer[y][x] = z
