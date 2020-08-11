@@ -21,6 +21,7 @@ class Render(object):
         self.glClear()
         self.light = self.vector(0, 0, 1)
         self.active_texture = None
+        self.active_texture2 = None
         self.active_shader = None
 
     @staticmethod
