@@ -17,7 +17,7 @@ def menu():
 4.  Poligonos
 5.  Load model con triangulos
 6.  Dibujar ZBuffer
-7.  Dibujar Modelo con textura
+7.  Dibujar Modelo con textura y shader
 99.Exit
 	""")
 
