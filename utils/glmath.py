@@ -1,7 +1,7 @@
+from numpy import pi
 
 def relative(user_input, input_low, input_high, output_high, output_low):
     return int(( (user_input - input_low) / (input_high - input_low) ) * (output_high - output_low) + output_low)
-
 
 def baryCoords(A, B, C, P):
     # u es para la A, v es para B, w para C
@@ -45,3 +45,68 @@ def div(V, norm):
         return vector(0, 0, 0)
     else:
         return vector(V['x'] / norm, V['y'] / norm, V['z'] / norm)
+
+def verificarMultiplicar(MR1, MR2):
+	cantColumnasMR1 = len(MR1[0])
+	cantFilasMR2 = len(MR2)
+	if cantColumnasMR1 == cantFilasMR2:
+		return True
+	return False
+
+def crearMatrizVacia(m, n):
+	matriz = []
+	for f in range(0, m):
+		fila = []
+		for c in range(0, n):
+			fila.append(0)
+		matriz.append(fila)
+	return matriz
+
+def degToRad(n):
+    return n * (pi/180)
+
+def multiplicarMatrizVector(V, M):
+    result = []
+    for i in range(len(M)):
+        total = 0
+        for j in range(len(V)):
+            total += M[i][j] * V[j]
+        result.append(total)
+    return result
+
+def traspuesta(matriz):
+	# Da la traspuesta de una matriz
+	cantFilas = len(matriz)
+	cantColumnas = len(matriz[0])
+	traspuesta = crearMatrizVacia(cantColumnas, cantFilas)
+	for f in range(0, cantFilas):
+		for c in range(0, cantColumnas):
+			traspuesta[c][f] = matriz[f][c]
+	return traspuesta
+
+def sumaBinaria(a, b):
+	# Suma binaria
+	if (a == 0 or b == 0):
+		return a + b
+	else:
+		return 1
+
+def multiplicarMatrices(MR1, MR2):
+	if (verificarMultiplicar(MR1, MR2)):
+		traspuestaMR1 = traspuesta(MR1)
+		matrizResultado = []
+
+		for f in range(0, len(MR2[0])):
+			vColumna = [0 for i in range(0, len(MR1))]
+			for c in range(0, len(MR1[0])):
+				v = list(map(lambda x: x * MR2[c][f], traspuestaMR1[c]))
+				vTemp = []
+				for e in range(0, len(v)):
+					vTemp.append(sumaBinaria(v[e], vColumna[e]))
+				vColumna = vTemp
+			matrizResultado.append(vColumna)
+
+		MFinal = traspuesta(matrizResultado)
+		return MFinal
+
+	return "No se pueden multiplicar"

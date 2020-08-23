@@ -19,9 +19,9 @@ def gourad(render, **kwargs):
         g *= texColor[1] / 255
         r *= texColor[2] / 255
 
-    nx = na[0] * u + nb[0] * v + nc[0] * w
-    ny = na[1] * u + nb[1] * v + nc[1] * w
-    nz = na[2] * u + nb[2] * v + nc[2] * w
+    nx = na['x'] * u + nb['x'] * v + nc['x'] * w
+    ny = na['y'] * u + nb['y'] * v + nc['y'] * w
+    nz = na['z'] * u + nb['z'] * v + nc['z'] * w
 
     normal = render.vector(nx, ny, nz)
     intensity = glmath.dot(normal, render.light)
@@ -53,9 +53,9 @@ def sombreadoCool(render, **kwargs):
         g *= texColor[1] / 255
         r *= texColor[2] / 255
 
-    nx = na[0] * u + nb[0] * v + nc[0] * w
-    ny = na[1] * u + nb[1] * v + nc[1] * w
-    nz = na[2] * u + nb[2] * v + nc[2] * w
+    nx = na['x'] * u + nb['x'] * v + nc['x'] * w
+    ny = na['y'] * u + nb['y'] * v + nc['y'] * w
+    nz = na['z'] * u + nb['z'] * v + nc['z'] * w
 
     normal = render.vector(nx, ny, nz)
     intensity = glmath.dot(normal, render.light)
@@ -95,9 +95,9 @@ def toon(render, **kwargs):
         g *= texColor[1] / 255
         r *= texColor[2] / 255
 
-    nx = na[0] * u + nb[0] * v + nc[0] * w
-    ny = na[1] * u + nb[1] * v + nc[1] * w
-    nz = na[2] * u + nb[2] * v + nc[2] * w
+    nx = na['x'] * u + nb['x'] * v + nc['x'] * w
+    ny = na['y'] * u + nb['y'] * v + nc['y'] * w
+    nz = na['z'] * u + nb['z'] * v + nc['z'] * w
 
     normal = render.vector(nx, ny, nz)
     intensity = glmath.dot(normal, render.light)
@@ -140,9 +140,9 @@ def heat(render, **kwargs):
         g *= texColor[1] / 255
         r *= texColor[2] / 255
 
-    nx = na[0] * u + nb[0] * v + nc[0] * w
-    ny = na[1] * u + nb[1] * v + nc[1] * w
-    nz = na[2] * u + nb[2] * v + nc[2] * w
+    nx = na['x'] * u + nb['x'] * v + nc['x'] * w
+    ny = na['y'] * u + nb['y'] * v + nc['y'] * w
+    nz = na['z'] * u + nb['z'] * v + nc['z'] * w
 
     normal = render.vector(nx, ny, nz)
     intensity = glmath.dot(normal, render.light)
@@ -190,9 +190,9 @@ def randomPattern(render, **kwargs):
         g *= texColor[1] / 255
         r *= texColor[2] / 255
 
-    nx = na[0] * u + nb[0] * v + nc[0] * w
-    ny = na[1] * u + nb[1] * v + nc[1] * w
-    nz = na[2] * u + nb[2] * v + nc[2] * w
+    nx = na['x'] * u + nb['x'] * v + nc['x'] * w
+    ny = na['y'] * u + nb['y'] * v + nc['y'] * w
+    nz = na['z'] * u + nb['z'] * v + nc['z'] * w
 
     normal = render.vector(nx, ny, nz)
     intensity = glmath.dot(normal, render.light)
@@ -231,9 +231,9 @@ def underwater(render, **kwargs):
         g *= texColor[1] / 255
         r *= texColor[2] / 255
 
-    nx = na[0] * u + nb[0] * v + nc[0] * w
-    ny = na[1] * u + nb[1] * v + nc[1] * w
-    nz = na[2] * u + nb[2] * v + nc[2] * w
+    nx = na['x'] * u + nb['x'] * v + nc['x'] * w
+    ny = na['y'] * u + nb['y'] * v + nc['y'] * w
+    nz = na['z'] * u + nb['z'] * v + nc['z'] * w
 
     normal = render.vector(nx, ny, nz)
     intensity = glmath.dot(normal, render.light)
@@ -276,9 +276,9 @@ def grayscale(render, **kwargs):
         g *= texColor[1] / 255
         r *= texColor[2] / 255
 
-    nx = na[0] * u + nb[0] * v + nc[0] * w
-    ny = na[1] * u + nb[1] * v + nc[1] * w
-    nz = na[2] * u + nb[2] * v + nc[2] * w
+    nx = na['x'] * u + nb['x'] * v + nc['x'] * w
+    ny = na['y'] * u + nb['y'] * v + nc['y'] * w
+    nz = na['z'] * u + nb['z'] * v + nc['z'] * w
 
     normal = render.vector(nx, ny, nz)
     intensity = glmath.dot(normal, render.light)
