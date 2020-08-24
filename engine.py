@@ -18,7 +18,11 @@ def menu():
 5.  Load model con triangulos
 6.  Dibujar ZBuffer
 7.  Dibujar Modelo con textura y shader
-99.Exit
+8.  Medium Angle Shot
+9.  Low Angle Shot
+10. High Angle Shot
+11. Dutch Angle Shot
+99. Exit
 	""")
 
 def menu_draw():
@@ -96,6 +100,14 @@ while continuar:
 		examples.model_z_buffer()
 	elif option == '7':
 		examples.model_texture()
+	elif option == '8':
+		examples.model_medium_angle()
+	elif option == '9':
+		examples.model_low_angle()
+	elif option == '10':
+		examples.model_high_angle()
+	elif option == '11':
+		examples.model_dutch_angle()
 	elif option == '99':
 		continuar = False
 		print('Bye Bye')

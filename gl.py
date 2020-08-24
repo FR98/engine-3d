@@ -10,6 +10,7 @@ from utils.memory import MemorySize
 from utils.polygone import Polygone
 from obj import Obj
 import utils.glmath as glmath
+from numpy import cos, sin
 
 
 class Render(object):
@@ -166,10 +167,17 @@ class Render(object):
                 x1, y1 = round(v1[0] * scale['x'] + posX), round(v1[1] * scale['y'] + posY)
                 self.glLine_coords(x0, y0, x1, y1)
 
-    def load_model_3D(self, filename, translate, scale, isWireframe=False):
+    def load_model_3D(self, filename, translate=None, scale=None, rotate=None, isWireframe=False):
+        translate = self.vector(0, 0, 0) if not translate else translate
+        scale = self.vector(1, 1, 1) if not scale else scale
+        rotate = self.vector(0, 0, 0) if not rotate else rotate
+
         model = Obj(filename)
         posX, posY = self.ndp_to_pixels(translate['x'], translate['y'])
         translate = self.vector(posX, posY, 0)
+
+        modelMatrix = self.createModelMatrix(translate, scale, rotate)
+        rotationMatrix = self.createRotationMatrix(rotate)
 
         for face in model.faces:
             vertex_count = len(face)
@@ -189,11 +197,11 @@ class Render(object):
                 if vertex_count > 3:
                     v3 = model.vertices[ face[3][0] - 1 ]
 
-                v0 = self.transform(self.vector(v0[0], v0[1], v0[2]), translate, scale)
-                v1 = self.transform(self.vector(v1[0], v1[1], v1[2]), translate, scale)
-                v2 = self.transform(self.vector(v2[0], v2[1], v2[2]), translate, scale)
+                v0 = self.transform(self.vector(v0[0], v0[1], v0[2]), modelMatrix)
+                v1 = self.transform(self.vector(v1[0], v1[1], v1[2]), modelMatrix)
+                v2 = self.transform(self.vector(v2[0], v2[1], v2[2]), modelMatrix)
                 if vertex_count > 3:
-                    v3 = self.transform(self.vector(v3[0], v3[1], v3[2]), translate, scale)
+                    v3 = self.transform(self.vector(v3[0], v3[1], v3[2]), modelMatrix)
 
                 if self.active_texture:
                     vt0 = model.texture_coords[face[0][1] - 1]
@@ -215,8 +223,12 @@ class Render(object):
                     vn0 = model.normals[face[0][2] - 1]
                     vn1 = model.normals[face[1][2] - 1]
                     vn2 = model.normals[face[2][2] - 1]
+                    vn0 = self.transform(self.vector(vn0[0], vn0[1], vn0[2]), rotationMatrix)
+                    vn1 = self.transform(self.vector(vn1[0], vn1[1], vn1[2]), rotationMatrix)
+                    vn2 = self.transform(self.vector(vn2[0], vn2[1], vn2[2]), rotationMatrix)
                     if vertex_count > 3:
                         vn3 = model.normals[face[3][2] - 1]
+                        vn3 = self.transform(self.vector(vn3[0], vn3[1], vn3[2]), rotationMatrix)
                 except:
                     pass
 
@@ -224,21 +236,72 @@ class Render(object):
                 if vertex_count > 3:
                     self.triangle_bc(v0,v2,v3, texcoords = (vt0,vt2,vt3), normals = (vn0,vn2,vn3))
 
-    def transform(self, vertex, translate=None, scale=None):
-        if translate == None:
-            translate = self.vector(0, 0, 0)
+    def transform(self, vertex, vMatrix):
+        augVertex = (vertex['x'], vertex['y'], vertex['z'], 1)
+        transVertex = glmath.multiplicarMatrizVector(augVertex, vMatrix)
+        transVertex = self.vector(transVertex[0] / transVertex[3],
+                       transVertex[1] / transVertex[3],
+                       transVertex[2] / transVertex[3])
+        return transVertex
 
-        if scale == None:
-            scale = self.vector(1, 1, 1)
+    def createModelMatrix(self, translate=None, scale=None, rotate=None):
+        translate = self.vector(0, 0, 0) if not translate else translate
+        scale = self.vector(1, 1, 1) if not scale else scale
+        rotate = self.vector(0, 0, 0) if not rotate else rotate
 
-        return self.vector(round(vertex['x'] * scale['x'] + translate['x']), round(vertex['y'] * scale['y'] + translate['y']), round(vertex['z'] * scale['z'] + translate['z']))
+        translateMatrix = [
+            [1, 0, 0, translate['x']],
+            [0, 1, 0, translate['y']],
+            [0, 0, 1, translate['z']],
+            [0, 0, 0, 1]
+        ]
 
+        scaleMatrix = [
+            [scale['x'], 0, 0, 0],
+            [0, scale['y'], 0, 0],
+            [0, 0, scale['z'], 0],
+            [0, 0, 0, 1]
+        ]
+
+        rotationMatrix = self.createRotationMatrix(rotate)
+        finalObjectMatrix = glmath.multiplicarMatrices(translateMatrix, rotationMatrix)
+        return glmath.multiplicarMatrices(finalObjectMatrix, scaleMatrix)
+
+    def createRotationMatrix(self, rotate=None):
+        rotate = self.vector(0, 0, 0) if not rotate else rotate
+        pitch = glmath.degToRad(rotate['x'])
+        yaw = glmath.degToRad(rotate['y'])
+        roll = glmath.degToRad(rotate['z'])
+
+        rotationX = [
+            [1, 0, 0, 0],
+            [0, cos(pitch), -sin(pitch), 0],
+            [0, sin(pitch), cos(pitch), 0],
+            [0, 0, 0, 1]
+        ]
+
+        rotationY = [
+            [cos(yaw), 0, sin(yaw), 0],
+            [0, 1, 0, 0],
+            [-sin(yaw), 0, cos(yaw), 0],
+            [0, 0, 0, 1]
+        ]
+
+        rotationZ = [
+            [cos(roll), -sin(roll), 0, 0],
+            [sin(roll), cos(roll), 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ]
+
+        finalMatrixRotation = glmath.multiplicarMatrices(rotationX, rotationY)
+        return glmath.multiplicarMatrices(finalMatrixRotation, rotationZ)
 
     def triangle_bc(self, A, B, C, texcoords, color=None, normals=()):
-        minX = min(A['x'], B['x'], C['x'])
-        minY = min(A['y'], B['y'], C['y'])
-        maxX = max(A['x'], B['x'], C['x'])
-        maxY = max(A['y'], B['y'], C['y'])
+        minX = int(min(A['x'], B['x'], C['x']))
+        minY = int(min(A['y'], B['y'], C['y']))
+        maxX = int(max(A['x'], B['x'], C['x']))
+        maxY = int(max(A['y'], B['y'], C['y']))
 
         for x in range(minX, maxX + 1):
             for y in range(minY, maxY + 1):
@@ -263,7 +326,6 @@ class Render(object):
 
                         self.glVertex_coords(x, y, Color.color(r, g, b))
                         self.zbuffer[y][x] = z
-
 
     def glZBuffer(self, filename='zbuffer.bmp'):
         archivo = open(filename, 'wb')
