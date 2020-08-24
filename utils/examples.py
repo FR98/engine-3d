@@ -92,6 +92,38 @@ def model_texture():
     render.light = render.vector(0, 0, 1)
     render.active_texture = Texture('./models/Face/model.bmp')
     render.active_shader = shaders.randomPattern
-    render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(0, 45, 0))
+    render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(0, 0, 0))
     render.glFinish()
     render.glZBuffer()
+
+def model_medium_angle():
+    render = Render(2000, 2000)
+    render.light = render.vector(0, 0, 1)
+    render.active_texture = Texture('./models/Face/model.bmp')
+    render.active_shader = shaders.randomPattern
+    render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(0, 25, 0))
+    render.glFinish()
+
+def model_low_angle():
+    render = Render(2000, 2000)
+    render.light = render.vector(0, 0, 1)
+    render.active_texture = Texture('./models/Face/model.bmp')
+    render.active_shader = shaders.randomPattern
+    render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(340, 10, 0))
+    render.glFinish()
+
+def model_high_angle():
+    render = Render(2000, 2000)
+    render.light = render.vector(0, 0, 1)
+    render.active_texture = Texture('./models/Face/model.bmp')
+    render.active_shader = shaders.randomPattern
+    render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(35, 350, 0))
+    render.glFinish()
+
+def model_dutch_angle():
+    render = Render(2000, 2000)
+    render.light = render.vector(0, 0, 1)
+    render.active_texture = Texture('./models/Face/model.bmp')
+    render.active_shader = shaders.grayscale
+    render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(35, 25, 0))
+    render.glFinish()

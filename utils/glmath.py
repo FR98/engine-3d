@@ -43,8 +43,7 @@ def norm(V):
 def div(V, norm):
     if (norm == 0):
         return vector(0, 0, 0)
-    else:
-        return vector(V['x'] / norm, V['y'] / norm, V['z'] / norm)
+    return vector(V['x'] / norm, V['y'] / norm, V['z'] / norm)
 
 def verificarMultiplicar(MR1, MR2):
 	cantColumnasMR1 = len(MR1[0])
@@ -85,11 +84,9 @@ def traspuesta(matriz):
 	return traspuesta
 
 def sumaBinaria(a, b):
-	# Suma binaria
 	if (a == 0 or b == 0):
 		return a + b
-	else:
-		return 1
+	return 1
 
 def multiplicarMatrices(MR1, MR2):
 	if (verificarMultiplicar(MR1, MR2)):
@@ -106,7 +103,5 @@ def multiplicarMatrices(MR1, MR2):
 				vColumna = vTemp
 			matrizResultado.append(vColumna)
 
-		MFinal = traspuesta(matrizResultado)
-		return MFinal
-
+		return traspuesta(matrizResultado)
 	return "No se pueden multiplicar"
