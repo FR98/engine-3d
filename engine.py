@@ -15,7 +15,7 @@ def menu():
 2.  Draw Star
 3.  Biplane OBJ
 4.  Poligonos
-5.  Load model con triangulos
+5.  Load model con triangulos (DEPRECATED)
 6.  Dibujar ZBuffer
 7.  Dibujar Modelo con textura y shader
 8.  Medium Angle Shot

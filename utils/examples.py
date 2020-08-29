@@ -55,7 +55,6 @@ def star(width, height):
 
 def biplane():
     render = Render(2000, 2000)
-    # render.load_model('./models/Propeller/Propeller.obj', (0, 0), (0.4, 0.4))
     render.load_model_2D('./models/Biplane/OBJ/HiPoly/Biplane.obj', render.vector(0, 0), render.vector(200, 200))
     render.glFinish()
 
@@ -82,9 +81,8 @@ def model_with_triangle():
 def model_z_buffer():
     render = Render(2000, 2000)
     render.light = render.vector(0, 0, 1)
-    # render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', translate=render.vector(0, 0, 0), scale=render.vector(200, 200, 200), light=render.vector(0, 0, 1))
-    render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(0, 0, 0))
-    # render.glFinish()
+    render.active_shader = shaders.randomPattern
+    render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', scale=render.vector(200, 200, 200), rotate=render.vector(0, 0, 0))
     render.glZBuffer()
 
 def model_texture():
@@ -102,7 +100,7 @@ def model_medium_angle():
     render.active_texture = Texture('./models/Face/model.bmp')
     render.active_shader = shaders.randomPattern
     render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(0, 25, 0))
-    render.glFinish()
+    render.glFinish('output/medium_angle.bmp')
 
 def model_low_angle():
     render = Render(2000, 2000)
@@ -110,7 +108,7 @@ def model_low_angle():
     render.active_texture = Texture('./models/Face/model.bmp')
     render.active_shader = shaders.randomPattern
     render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(340, 10, 0))
-    render.glFinish()
+    render.glFinish('output/low_angle.bmp')
 
 def model_high_angle():
     render = Render(2000, 2000)
@@ -118,7 +116,7 @@ def model_high_angle():
     render.active_texture = Texture('./models/Face/model.bmp')
     render.active_shader = shaders.randomPattern
     render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(35, 350, 0))
-    render.glFinish()
+    render.glFinish('output/high_angle.bmp')
 
 def model_dutch_angle():
     render = Render(2000, 2000)
@@ -126,4 +124,4 @@ def model_dutch_angle():
     render.active_texture = Texture('./models/Face/model.bmp')
     render.active_shader = shaders.grayscale
     render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(35, 25, 0))
-    render.glFinish()
+    render.glFinish('output/dutch_angle.bmp')

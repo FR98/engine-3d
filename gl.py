@@ -78,7 +78,7 @@ class Render(object):
     def glColor(self, r = 0, g = 0, b = 0):
         self.draw_color = Color.color(r, g, b)
 
-    def glFinish(self, filename = 'output.bmp'):
+    def glFinish(self, filename = 'output/output.bmp'):
         render = open(filename, 'wb')
 
         # File header 14 bytes
@@ -327,7 +327,7 @@ class Render(object):
                         self.glVertex_coords(x, y, Color.color(r, g, b))
                         self.zbuffer[y][x] = z
 
-    def glZBuffer(self, filename='zbuffer.bmp'):
+    def glZBuffer(self, filename='output/zbuffer.bmp'):
         archivo = open(filename, 'wb')
 
         height, width = self.height, self.width
