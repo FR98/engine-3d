@@ -130,6 +130,7 @@ def proyecto1():
     render = Render(1080, 1080)
     background = Texture('./models/fondos/fondo.bmp')
     render.viewPort = background.pixels
+    render.lookAt(render.vector(1, 1, 1), render.vector(0,0,0))
 
     render.light = render.vector(0, 0, 1)
 
