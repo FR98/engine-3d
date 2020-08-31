@@ -22,6 +22,7 @@ def menu():
 9.  Low Angle Shot
 10. High Angle Shot
 11. Dutch Angle Shot
+12. Proyecto 1
 99. Exit
 	""")
 
@@ -108,6 +109,8 @@ while continuar:
 		examples.model_high_angle()
 	elif option == '11':
 		examples.model_dutch_angle()
+	elif option == '12':
+		examples.proyecto1()
 	elif option == '99':
 		continuar = False
 		print('Bye Bye')

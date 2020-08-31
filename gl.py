@@ -10,7 +10,7 @@ from utils.memory import MemorySize
 from utils.polygone import Polygone
 from obj import Obj
 import utils.glmath as glmath
-from numpy import cos, sin
+from numpy import cos, sin, tan, pi
 
 
 class Render(object):
@@ -24,6 +24,9 @@ class Render(object):
         self.active_texture = None
         self.active_texture2 = None
         self.active_shader = None
+
+        self.createViewMatrix()
+        self.createProjectionMatrix()
 
     @staticmethod
     def glInit(width, height):
@@ -39,8 +42,47 @@ class Render(object):
         print(self.viewPort_x)
         print(self.viewPort_y)
 
+    def createViewMatrix(self, camPosition=None, camRotation=None):
+        camPosition = self.vector(0, 0, 0) if not camPosition else camPosition
+        camRotation = self.vector(0, 0, 0) if not camRotation else camRotation
+        camMatrix = self.createModelMatrix(translate=camPosition, rotate=camRotation)
+        self.viewMatrix = glmath.inverse(camMatrix)
+
+    def createProjectionMatrix(self, n=0.1, f=1000, fov=60):
+        t = tan((fov * pi / 180) / 2) * n
+        r = t * self.viewPort_width / self.viewPort_height
+
+        self.projectionMatrix = [
+            [n / r, 0, 0, 0],
+            [0, n / t, 0, 0],
+            [0, 0, -(f + n) / (f - n), -(2 * f * n) / (f - n)],
+            [0, 0, -1, 0]
+        ]
+
+    def lookAt(self, eye, camPosition=None):
+        camPosition = self.vector(0, 0, 0) if not camPosition else camPosition
+
+        forward = glmath.sub(camPosition, eye)
+        forward = glmath.div(forward, glmath.frobeniusNorm(forward))
+
+        right = glmath.cross(self.vector(0,1,0), forward)
+        right = glmath.div(right, glmath.frobeniusNorm(right))
+
+        up = glmath.cross(forward, right)
+        up = glmath.div(up, glmath.frobeniusNorm(up))
+
+        camMatrix = [
+            [round(right['x']), round(up['x']), round(forward['x']), round(camPosition['x'])],
+            [round(right['y']), round(up['y']), round(forward['y']), round(camPosition['y'])],
+            [round(right['z']), round(up['z']), round(forward['z']), round(camPosition['z'])],
+            [0,0,0,1]
+        ]
+
+        self.viewMatrix = glmath.inverse(camMatrix)
+
     def glCreateWindow(self, width, height):
         self.width, self.height = width, height
+        self.glClear()
         Render.glViewPort(self, 0, 0, width, height)
 
     def glViewPort(self, x, y, width, height):
@@ -49,6 +91,13 @@ class Render(object):
         self.viewPort_height = height if height < self.height else self.height
         self.viewPort = [ [ Color.black() for y in range(self.viewPort_height) ] for x in range(self.viewPort_width) ]
         self.glClear()
+
+        self.viewportMatrix = [
+                [self.viewPort_width / 2, 0, 0, x + self.viewPort_width / 2],
+                [0, self.viewPort_height / 2, 0, y + self.viewPort_height / 2],
+                [0, 0, 0.5, 0.5],
+                [0, 0, 0, 1]
+            ]
 
     def glClear(self, r = 0, g = 0, b = 0):
         self.pixels = [ [ Color.color(r, g, b) for y in range(self.height) ] for x in range(self.width) ]
@@ -200,8 +249,16 @@ class Render(object):
                 v0 = self.transform(self.vector(v0[0], v0[1], v0[2]), modelMatrix)
                 v1 = self.transform(self.vector(v1[0], v1[1], v1[2]), modelMatrix)
                 v2 = self.transform(self.vector(v2[0], v2[1], v2[2]), modelMatrix)
+                vA, vB, vC = v0, v1, v2
+
+                v0 = self.camTransform(v0)
+                v1 = self.camTransform(v1)
+                v2 = self.camTransform(v2)
+
                 if vertex_count > 3:
                     v3 = self.transform(self.vector(v3[0], v3[1], v3[2]), modelMatrix)
+                    vD = v3
+                    v3 = self.camTransform(v3)
 
                 if self.active_texture:
                     vt0 = model.texture_coords[face[0][1] - 1]
@@ -223,18 +280,18 @@ class Render(object):
                     vn0 = model.normals[face[0][2] - 1]
                     vn1 = model.normals[face[1][2] - 1]
                     vn2 = model.normals[face[2][2] - 1]
-                    vn0 = self.transform(self.vector(vn0[0], vn0[1], vn0[2]), rotationMatrix)
-                    vn1 = self.transform(self.vector(vn1[0], vn1[1], vn1[2]), rotationMatrix)
-                    vn2 = self.transform(self.vector(vn2[0], vn2[1], vn2[2]), rotationMatrix)
+                    vn0 = self.dirTransform(self.vector(vn0[0], vn0[1], vn0[2]), rotationMatrix)
+                    vn1 = self.dirTransform(self.vector(vn1[0], vn1[1], vn1[2]), rotationMatrix)
+                    vn2 = self.dirTransform(self.vector(vn2[0], vn2[1], vn2[2]), rotationMatrix)
                     if vertex_count > 3:
                         vn3 = model.normals[face[3][2] - 1]
-                        vn3 = self.transform(self.vector(vn3[0], vn3[1], vn3[2]), rotationMatrix)
+                        vn3 = self.dirTransform(self.vector(vn3[0], vn3[1], vn3[2]), rotationMatrix)
                 except:
                     pass
 
-                self.triangle_bc(v0,v1,v2, texcoords = (vt0,vt1,vt2), normals = (vn0,vn1,vn2))
+                self.triangle_bc(vA,vB,vC, texcoords=(vt0,vt1,vt2), normals=(vn0,vn1,vn2))
                 if vertex_count > 3:
-                    self.triangle_bc(v0,v2,v3, texcoords = (vt0,vt2,vt3), normals = (vn0,vn2,vn3))
+                    self.triangle_bc(vA,vB,vD, texcoords=(vt0,vt2,vt3), normals=(vn0,vn2,vn3))
 
     def transform(self, vertex, vMatrix):
         augVertex = (vertex['x'], vertex['y'], vertex['z'], 1)
@@ -243,6 +300,18 @@ class Render(object):
                        transVertex[1] / transVertex[3],
                        transVertex[2] / transVertex[3])
         return transVertex
+
+    def camTransform(self, vertex):
+        augVertex = (vertex['x'], vertex['y'], vertex['z'], 1)
+        transVertex1 = glmath.multiplicarMatrices(self.viewportMatrix, self.projectionMatrix)
+        transVertex2 = glmath.multiplicarMatrices(transVertex1, self.viewMatrix)
+        transVertex = glmath.multiplicarMatrizVector(augVertex, transVertex2)
+        return self.vector(transVertex[0] / transVertex[3], transVertex[1] / transVertex[3], transVertex[2] / transVertex[3])
+
+    def dirTransform(self, vertex, vMatrix):
+        augVertex = (vertex['x'], vertex['y'], vertex['z'], 0)
+        transVertex = glmath.multiplicarMatrizVector(augVertex, vMatrix)
+        return self.vector(transVertex[0], transVertex[1], transVertex[2])
 
     def createModelMatrix(self, translate=None, scale=None, rotate=None):
         translate = self.vector(0, 0, 0) if not translate else translate
@@ -315,14 +384,18 @@ class Render(object):
                     z = A['z'] * u + B['z'] * v + C['z'] * w
 
                     if z > self.zbuffer[y][x]:
-                        r, g, b = self.active_shader(
-                            self,
-                            # verts=(A,B,C),
-                            baryCoords=(u,v,w),
-                            texCoords=texcoords,
-                            normals=normals,
-                            color = color or self.draw_color
-                        )
+                        if self.active_shader:
+
+                            r, g, b = self.active_shader(
+                                self,
+                                # verts = verts,
+                                baryCoords = (u,v,w),
+                                texCoords = texcoords,
+                                normals = normals,
+                                color = color or self.draw_color
+                            )
+                        else:
+                            b, g, r = color or self.draw_color
 
                         self.glVertex_coords(x, y, Color.color(r, g, b))
                         self.zbuffer[y][x] = z

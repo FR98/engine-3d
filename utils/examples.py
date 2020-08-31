@@ -125,3 +125,36 @@ def model_dutch_angle():
     render.active_shader = shaders.grayscale
     render.load_model_3D('./models/Face/model.obj', scale=render.vector(200, 200, 200), rotate=render.vector(35, 25, 0))
     render.glFinish('output/dutch_angle.bmp')
+
+def proyecto1():
+    render = Render(1080, 1080)
+    background = Texture('./models/fondos/fondo.bmp')
+    render.viewPort = background.pixels
+    render.lookAt(render.vector(1, 1, 1), render.vector(0,0,0))
+
+    render.light = render.vector(0, 0, 1)
+
+    render.active_shader = shaders.underwater
+    render.load_model_3D('./models/Biplane/OBJ/HiPoly/Biplane.obj', scale=render.vector(18, 18, 18), rotate=render.vector(20, 225, 0), translate=render.vector(-0.5, -0.15, 0))
+
+    render.active_shader = shaders.grayscale
+    render.active_texture = Texture('./models/beriev/Beriev_2048.bmp')
+    render.load_model_3D('./models/beriev/BerievA50.obj', scale=render.vector(2, 2, 2), rotate=render.vector(340, 90, 0), translate=render.vector(0.25, 0.8, 0))
+
+    render.active_shader = shaders.toon
+    render.active_texture = Texture('./models/f104/Albedo.bmp')
+    render.load_model_3D('./models/f104/F-104.obj', scale=render.vector(7.5, 7.5, 7.5), rotate=render.vector(340, 90, 0), translate=render.vector(-0.1, 0.7, -0.25))
+
+    render.active_shader = shaders.randomPattern
+    render.active_texture = Texture('./models/f16/Albedo.bmp')
+    render.load_model_3D('./models/f16/F-16D.obj', scale=render.vector(20, 20, 20), rotate=render.vector(0, 340, 320), translate=render.vector(0.5, 0, -0.75))
+
+    render.active_shader = shaders.randomPattern
+    render.active_texture = Texture('./models/dilophosaurus/skin.bmp')
+    render.load_model_3D('./models/dilophosaurus/dilophosaurus.obj', scale=render.vector(100, 100, 100), rotate=render.vector(35, 25, 0), translate=render.vector(0.25, -0.6, -0.25))
+
+    render.active_shader = shaders.heat
+    render.active_texture = Texture('./models/dilophosaurus/skin.bmp')
+    render.load_model_3D('./models/dilophosaurus/dilophosaurus.obj', scale=render.vector(25, 25, 25), rotate=render.vector(10, 90, 0), translate=render.vector(0, -0.6, -0.5))
+
+    render.glFinish('output/proyecto1.bmp')
